@@ -12,6 +12,12 @@ var canvas, game;
 var length = 1; //для писоса
 
 function init() {
+
+    // get two numbers
+
+    var field_width = parseInt(document.getElementById('field_width').value);
+    var field_height = parseInt(document.getElementById('field_height').value);
+
     //back-grid
     canvas = document.getElementById('back').getContext('2d');
     canvas.width =  document.getElementById('back').offsetWidth;
@@ -22,18 +28,20 @@ function init() {
     document.getElementById('game').width = canvas.width;
     document.getElementById('game').height = canvas.height;
 
+    CELL_SIZE = Math.min(canvas.width / field_width, canvas.height / field_height);
+
     //game
     game = document.getElementById('game').getContext('2d');
 
-    alert('ONCE: ' + CELL_SIZE+'/'+canvas.width+'/'+canvas.height);
+    //alert('ONCE: ' + CELL_SIZE+'/'+canvas.width+'/'+canvas.height);
     /* Сетка */
     function Grid() {
         this.size = { x : 0, y : 0 };
         this.width = canvas.width;
         this.height = canvas.height;
 
-        this.size.x = parseInt(canvas.width / CELL_SIZE, 10);
-        this.size.y = parseInt(canvas.height / CELL_SIZE, 10);
+        this.size.x = field_width;//parseInt(canvas.width / CELL_SIZE, 10);
+        this.size.y = field_height;//parseInt(canvas.height / CELL_SIZE, 10);
         //this.size.x = canvas.width;
         //this.size.y = canvas.height;
 
@@ -59,11 +67,11 @@ function init() {
             canvas.strokeStyle = "#eee"; // цвет линии
             canvas.lineWidth = 0.4;
             canvas.beginPath();
-            for (i = 0; i <= this.size.x; i++) {
+            for (i = 0; i <= field_width; i++) {
                 canvas.moveTo(0, i * CELL_SIZE);
                 canvas.lineTo(canvas.width, i * CELL_SIZE);
             }
-            for (i = 0; i <= this.size.x; i++) {
+            for (i = 0; i <= field_width; i++) {
                 canvas.moveTo(i * CELL_SIZE, 0);
                 canvas.lineTo(i * CELL_SIZE, canvas.height);
             }
@@ -254,11 +262,11 @@ function init() {
 
     //Кнопка очистки
     clearBtn = document.getElementById('clear');
-    clearBtn.onclick = function () { gameUpd.clear(); };
+    clearBtn.onclick = function () { init(); gameUpd.clear(); };
 
     //Кнопка рандомизации
     randBtn = document.getElementById('rand');
-    randBtn.onclick = function () { gameUpd.randomFill(); };
+    randBtn.onclick = function () { init(); gameUpd.clear(); gameUpd.randomFill(); };
 
     //Кнопка шага
     stepBtn = document.getElementById('step');

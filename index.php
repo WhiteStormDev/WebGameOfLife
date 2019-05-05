@@ -37,11 +37,13 @@
           <div class="row">
             <div class="input-field col s6">
               <input placeholder="Название мира"id="wname" type="text" class="validate" required name = "world_name" maxlength="150">
-              <label for="wname">Название мира</label>
+              <!-- <label for="wname">Название мира</label> -->
+							<!-- <span class="helper-text" data-error="wrong" data-success="right">Название мира</span> -->
             </div>
             <div class="input-field col s6">
-             <input id="password" type="password" class="validate" required name = "password">
-             <label for="password">Пароль</label>
+             <input placeholder="Пароль" id="password" type="password" class="validate" required name = "password">
+             <!-- <label for="password">Пароль</label> -->
+						 <!-- <span class="helper-text" data-error="wrong" data-success="right">Пароль</span> -->
            </div>
            <div class"row">
              <input type = "submit" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
@@ -56,14 +58,37 @@
 					<canvas id="game" class="game"></canvas>
 					<canvas id="back" class="back"></canvas>
 					<div class="card" style="margin: 5px;" >
-						<input type="button" class = "waves-effect waves-light btn" id="clear" value="Очистить поле">
-						<input type="button" class = "waves-effect waves-light btn" id="rand" value="Случайное поле">
-						<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
-						<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
-						<hr style="color: dark-cyan;">
-						<input type="button" class = "waves-effect waves-light btn" id="glider" value="Глайдер">
-						<input type="button" class = "waves-effect waves-light btn" id="exploder" value="Эксплодер">
-						<input type="button" class = "waves-effect waves-light btn" id="gosper" value="Пушка Госпера">
+						<div class="row">
+							<div class="col s3">
+								<input type="button" class = "waves-effect waves-light btn" id="clear" value="Очистить поле">
+							</div>
+							<div class="col s3">
+								<input type="button" class = "waves-effect waves-light btn" id="rand" value="Случайное поле">
+							</div>
+							<div class="col s3">
+								<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
+							</div>
+							<div class="col s3">
+								<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="input-field col s2">
+								<input value="1280" id="field_width" type="text" class="validate">
+								<span class="helper-text" data-error="wrong" data-success="right">Ширина (кл.)</span>
+							</div>
+							<div class="input-field col s2">
+								<input value="400" id="field_height" type="text" class="validate">
+								<span class="helper-text" data-error="wrong" data-success="right">Высота (кл.)</span>
+							</div>
+						</div>
+						<div class="row">
+							<!-- <hr style="color: dark-cyan;"> -->
+							<input type="button" class = "waves-effect waves-light btn" id="glider" value="Глайдер">
+							<input type="button" class = "waves-effect waves-light btn" id="exploder" value="Эксплодер">
+							<input type="button" class = "waves-effect waves-light btn" id="gosper" value="Пушка Госпера">
+						</div>
 					</div>
 					<p></p>
 					<script src="life.js" type="application/javascript"></script>
