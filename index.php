@@ -111,7 +111,7 @@
           if (isset($_POST['world_name'])) {$world_name = $_POST['world_name'];}
           if (isset($_POST['password'])) {$password = $_POST['password'];}
 
-          if (isset($_POST['save']))
+          if (isset($_POST['savegame']))
           {
 						echo "<script type = 'text/javascript'>
 							init();
