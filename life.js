@@ -303,5 +303,9 @@ function init() {
         gameUpd.fill();
     };
 }
+function set_cell (i, j, value){
+    cells[i][j] = parseInt(value) === 1;
+}
+
 
 window.onload = init();

@@ -46,8 +46,10 @@
 						 <!-- <span class="helper-text" data-error="wrong" data-success="right">Пароль</span> -->
            </div>
            <div class"row">
-             <input type = "submit" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
-             <input type = "submit" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
+						<div class="col s12">
+             	<input type = "submit" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
+             	<input type = "submit" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
+					 	</div>
 						 <!-- <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/> -->
            </div>
           </div>
@@ -59,40 +61,48 @@
 					<canvas id="back" class="back"></canvas>
 					<div class="card" style="margin: 5px;" >
 						<div class="row">
-							<div class="col s3">
+							<div class="col s8">
 								<input type="button" class = "waves-effect waves-light btn" id="clear" value="Очистить поле">
-							</div>
-							<div class="col s3">
 								<input type="button" class = "waves-effect waves-light btn" id="rand" value="Случайное поле">
-							</div>
-							<div class="col s3">
 								<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
 							</div>
-							<div class="col s3">
+							<div class="col s4">
 								<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
 							</div>
 
+
 						</div>
 						<div class="row">
-							<div class="input-field col s2">
-								<input value="1280" id="field_width" type="text" class="validate">
-								<span class="helper-text" data-error="wrong" data-success="right">Ширина (кл.)</span>
-							</div>
-							<div class="input-field col s2">
-								<input value="400" id="field_height" type="text" class="validate">
-								<span class="helper-text" data-error="wrong" data-success="right">Высота (кл.)</span>
+							<div class="col s12">
+								<div class="input-field col s2">
+									<input value="1280" id="field_width" type="text" class="validate">
+									<span class="helper-text" data-error="wrong" data-success="right">Ширина (кл.)</span>
+								</div>
+								<div class="input-field col s2">
+									<input value="400" id="field_height" type="text" class="validate">
+									<span class="helper-text" data-error="wrong" data-success="right">Высота (кл.)</span>
+								</div>
 							</div>
 						</div>
 						<div class="row">
 							<!-- <hr style="color: dark-cyan;"> -->
-							<input type="button" class = "waves-effect waves-light btn" id="glider" value="Глайдер">
-							<input type="button" class = "waves-effect waves-light btn" id="exploder" value="Эксплодер">
-							<input type="button" class = "waves-effect waves-light btn" id="gosper" value="Пушка Госпера">
+							<div class="col s12">
+								<input type="button" class = "waves-effect waves-light btn" id="glider" value="Глайдер">
+								<input type="button" class = "waves-effect waves-light btn" id="exploder" value="Эксплодер">
+								<input type="button" class = "waves-effect waves-light btn" id="gosper" value="Пушка Госпера">
+							</div>
 						</div>
 					</div>
 					<p></p>
 					<script src="life.js" type="application/javascript"></script>
 				</div>
+				<script type = "text/javascript">
+					function updateTextboxes(value1, value2){
+					  document.getElementById('field_width').value = value1;
+						document.getElementById('field_height').value = value2;
+						return false;
+					}
+				</script>
         <?php
           if (isset($_POST['world_name'])) {$world_name = $_POST['world_name'];}
           if (isset($_POST['password'])) {$password = $_POST['password'];}
@@ -104,59 +114,32 @@
 
           if (!empty($_POST['loadgame']))
           {
-            $takeWorldIdQuery = 'SELECT `Id` FROM `Worlds` WHERE `Name` = "' . $world_name . '" AND `Password` = "' . $password . '"';
+            $takeWorldIdQuery = 'SELECT `Id`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '" AND `Password` = "' . $password . '"';
             $result = mysqli_query($db, $takeWorldIdQuery);
-            $currentWorldId = mysqli_fetch_array($result);
+            $currentWorld = mysqli_fetch_array($result);
 
 
-            $takeMatrixQuery = 'SELECT `Row_Index`, `Column_Index`, `Value` FROM `Cell` WHERE `World_Id` = "' . $currentWorldId["Id"] . '" ORDER BY `Row_Index`, `Column_Index`';
+            $takeMatrixQuery = 'SELECT `Row_Index`, `Column_Index`, `Value` FROM `Cell` WHERE `World_Id` = "' . $currentWorld["Id"] . '" ORDER BY `Row_Index`, `Column_Index`';
             $matrixResult = mysqli_query($db, $takeMatrixQuery);
 
-            $takeHeightWidthQuery = 'SELECT MAX(`Row_Index`), MAX(`Column_Index`) FROM `Cell`';
-            $heightWidthResult = mysqli_query($db, $takeHeightWidthQuery);
+            // $takeHeightWidthQuery = 'SELECT MAX(`Row_Index`), MAX(`Column_Index`) FROM `Cell`';
+            // $heightWidthResult = mysqli_query($db, $takeHeightWidthQuery);
 
-            $oldColumnIndex = 0;
-            $oldRowIndex = 0;
-
-
-            //namespace Life;
-            // $game = new Game([]);
-            // $wh = mysqli_fetch_array($heightWidthResult);
-            // $game->createNewGrid(
-            //   $wh["MAX(`Column_Index`)"] + 1,
-            //   $wh["MAX(`Row_Index`)"] + 1);
-            //
-            // printf("<p1>Width=%s, Heigth=%s </p1>", $wh["MAX(`Column_Index`)"], $wh["MAX(`Row_Index`)"]);
-            //
-            // while ($cell = mysqli_fetch_array($matrixResult))
-            //   $game->setValue($cell);
-
-            // printf(
-            // "
-						// <div class=\"map\">
-		        //   <canvas id=\"game\">
-						// 	</canvas>
-						// 	<div class=\"filter\">
-						// 		<canvas id=\"back\">
-						// 		</canvas>
-						// 	</div>
-            // </div>
-						//
-            // <br>
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"clear\" value=\"Очистить поле\">
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"rand\" value=\"Случайное поле\">
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"step\" value=\"Следующее поколение\">
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"autoplay\" value=\"Автовоспроизведение\">
-            // <hr>
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"glider\" value=\"Глайдер\">
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"exploder\" value=\"Эксплодер\">
-            // <input type=\"button\" class = \"waves-effect waves-light btn\" id=\"gosper\" value=\"Пушка Госпера\">
-						//
-            // <script src=\"life.js\" type=\"application/javascript\"></script>
-						// ");
-
-
-
+            $field_width = $currentWorld["Field_Width"];
+						$field_height = $currentWorld["Field_Height"];
+						//printf('<p>%s | %s</p>', $field_width, $field_height);
+						echo "<script type = 'text/javascript'>
+							updateTextboxes('$field_width', '$field_height');
+							init();
+						</script>";
+						while ($cell = mysqli_fetch_array($matrixResult))
+						{
+							$cellRowInd = $cell["Row_Index"];
+							$cellColInd = $cell["Column_Index"];
+							$cellValue = $cell["Value"];
+							print($cellValue);
+							echo "<script type = \"text/javascript\">set_cell('$cellRowInd','$cellColInd','$cellValue');</script>";
+						}
           }
         ?>
       </div>
