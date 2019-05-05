@@ -1,10 +1,10 @@
 'use strict'; //ES5 строгий режим
 var console;
 
-var width = 400;
-var height = 200;
+//var width = 400;
+//var height = 200;
 
-var CELL_SIZE = 4; //размер клетки
+var CELL_SIZE = 16; //размер клетки
 var cells = [], buffCells = [];
 var timeout = 30; //задержка для автоплея
 var canvas, game;
@@ -14,17 +14,30 @@ var length = 1; //для писоса
 function init() {
     //back-grid
     canvas = document.getElementById('back').getContext('2d');
-    canvas.width =  document.getElementById('back').width;
-    canvas.height =  document.getElementById('back').height;
+    canvas.width =  document.getElementById('back').offsetWidth;
+    canvas.height =  document.getElementById('back').offsetHeight;
+
+    document.getElementById('back').width = canvas.width;
+    document.getElementById('back').height = canvas.height;
+    document.getElementById('game').width = canvas.width;
+    document.getElementById('game').height = canvas.height;
 
     //game
     game = document.getElementById('game').getContext('2d');
 
+    alert('ONCE: ' + CELL_SIZE+'/'+canvas.width+'/'+canvas.height);
     /* Сетка */
     function Grid() {
         this.size = { x : 0, y : 0 };
-        this.size.x = width;
-        this.size.y = height;
+        this.width = canvas.width;
+        this.height = canvas.height;
+
+        this.size.x = parseInt(canvas.width / CELL_SIZE, 10);
+        this.size.y = parseInt(canvas.height / CELL_SIZE, 10);
+        //this.size.x = canvas.width;
+        //this.size.y = canvas.height;
+
+        /*Размер клеток*/
 
         /* заполняем массив cells */
         this.fill = function () {
@@ -61,13 +74,14 @@ function init() {
     /* обновляем отрисовку */
     function Update() {
         //var upd = new Update();
-
         this.clear = function () {
             game.clearRect(0, 0, canvas.width, canvas.height);
         };
 
         this.fillCell = function (x, y) {
-            game.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE + 1, CELL_SIZE + 1);
+            var cell_width = CELL_SIZE;// * canvas.height / canvas.width;
+            var cell_heigth = CELL_SIZE;
+            game.fillRect(x * cell_width, y * cell_heigth, cell_width + 1, cell_heigth + 1);
         };
 
         this.fill = function () {

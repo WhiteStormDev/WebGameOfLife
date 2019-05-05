@@ -46,23 +46,13 @@
            <div class"row">
              <input type = "submit" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
              <input type = "submit" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
-						 <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/>
+						 <!-- <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/> -->
            </div>
           </div>
         </form>
 
 
 				<div class="card hoverable">
-
-					<!-- <div class="game">
-						<canvas id="game">
-						</canvas>
-						<div class="back">
-							<canvas id="back">
-							</canvas>
-						</div>
-					</div> -->
-
 					<canvas id="game" class="game"></canvas>
 					<canvas id="back" class="back"></canvas>
 					<div class="card" style="margin: 5px;" >
@@ -70,7 +60,7 @@
 						<input type="button" class = "waves-effect waves-light btn" id="rand" value="Случайное поле">
 						<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
 						<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
-						<hr style="color: dark-cyan">
+						<hr style="color: dark-cyan;">
 						<input type="button" class = "waves-effect waves-light btn" id="glider" value="Глайдер">
 						<input type="button" class = "waves-effect waves-light btn" id="exploder" value="Эксплодер">
 						<input type="button" class = "waves-effect waves-light btn" id="gosper" value="Пушка Госпера">
