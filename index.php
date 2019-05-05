@@ -37,18 +37,14 @@
           <div class="row">
             <div class="input-field col s6">
               <input placeholder="Название мира"id="wname" type="text" class="validate" required name = "world_name" maxlength="150">
-              <!-- <label for="wname">Название мира</label> -->
-							<!-- <span class="helper-text" data-error="wrong" data-success="right">Название мира</span> -->
             </div>
             <div class="input-field col s6">
              <input placeholder="Пароль" id="password" type="password" class="validate" required name = "password">
-             <!-- <label for="password">Пароль</label> -->
-						 <!-- <span class="helper-text" data-error="wrong" data-success="right">Пароль</span> -->
            </div>
            <div class"row">
 						<div class="col s12">
              	<input type = "submit" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
-             	<input type = "submit" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
+             	<input type = "submit" id = "submitbtn" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
 					 	</div>
 						 <!-- <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/> -->
            </div>
@@ -69,17 +65,15 @@
 							<div class="col s4">
 								<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
 							</div>
-
-
 						</div>
 						<div class="row">
 							<div class="col s12">
 								<div class="input-field col s2">
-									<input value="1280" id="field_width" type="text" class="validate">
+									<input value="128" id="field_width" type="text" class="validate">
 									<span class="helper-text" data-error="wrong" data-success="right">Ширина (кл.)</span>
 								</div>
 								<div class="input-field col s2">
-									<input value="400" id="field_height" type="text" class="validate">
+									<input value="50" id="field_height" type="text" class="validate">
 									<span class="helper-text" data-error="wrong" data-success="right">Высота (кл.)</span>
 								</div>
 							</div>
@@ -101,18 +95,31 @@
 					  document.getElementById('field_width').value = value1;
 						document.getElementById('field_height').value = value2;
 						return false;
+
 					}
+					// $(document).ready(function(){
+					// 	$('#submitbtn').click (function(){
+					// 		$.post('saveGame.php',
+					// 		{id: <php? echo ?>, world_name: $('input[name = "world_name"]').val(), password: $('input[name = "password"]').val()},
+					// 		function (data){alert("Игра сохранена");
+					// 						document.location.href = document.location;
+					// 		});
+					// 	});
+					// })
 				</script>
         <?php
           if (isset($_POST['world_name'])) {$world_name = $_POST['world_name'];}
           if (isset($_POST['password'])) {$password = $_POST['password'];}
 
-          if (!empty($_POST['save']))
+          if (isset($_POST['save']))
           {
-            printf("<p>Мир сохранен: %s | %s</p>", $world_name, $password);
+						echo "<script type = 'text/javascript'>
+							init();
+							alert(\"saved\");
+						</script>";
           }
-
-          if (!empty($_POST['loadgame']))
+					else
+          if (isset($_POST['loadgame']))
           {
             $takeWorldIdQuery = 'SELECT `Id`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '" AND `Password` = "' . $password . '"';
             $result = mysqli_query($db, $takeWorldIdQuery);
