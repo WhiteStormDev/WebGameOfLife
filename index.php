@@ -113,10 +113,31 @@
 
           if (isset($_POST['savegame']))
           {
-						echo "<script type = 'text/javascript'>
-							init();
-							alert(\"saved\");
-						</script>";
+						$rowIndex;
+						$columnIndex;
+						$value;
+
+						$queryTryTakeExistWorld = 'SELECT `Id`, `Password`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
+						$takeExistResult = mysqli_query($db, $queryTryTakeExistWorld);
+
+						if($tryTakeExistWorld = mysqli_fetch_array($takeExistResult))
+						{
+							$tryId = $tryTakeExistWorld["Id"];
+							$passwordCorrect = $password == $tryTakeExistWorld["Password"];
+							$saveMessage = $passwordCorrect ? 'Последнее сохранение мира обновленно' : 'Мир с таким именем уже существует, введен неверный пароль';
+							echo "<script type = 'text/javascript'>
+								alert('$saveMessage');
+							</script>";
+							if ($passwordCorrect)
+							{
+								
+							}
+						}
+						//'INSERT INTO `Worlds`(`Name`, `Password`, `Field_Width`, `FORM_ID`) VALUES (SysDate(), "' . $_POST['name'] . '", "' . $_POST['message'] . '", "' . $id . '")' ;
+						// echo "<script type = 'text/javascript'>
+						// 	init();
+						// 	alert(\"saved\");
+						// </script>";
           }
 					else
           if (isset($_POST['loadgame']))
