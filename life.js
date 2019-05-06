@@ -100,11 +100,7 @@ function init() {
                         upd.fillCell(i, j);
             //Перессчитываем ячейки
             upd.cells();
-            get_field_height = grid.size.y;
-            get_field_width = grid.size.x;
-            grid_width();
-            grid_height();
-            grid_values();
+			update_save(grid);
         };
 
 		this.redraw = function () {
@@ -114,10 +110,19 @@ function init() {
                 for (j = 0; j < grid.size.y; j++)
                     if (cells[i][j] === true)
                         upd.fillCell(i, j);
-      get_field_height = grid.size.y;
-      get_field_width = grid.size.x;
+			update_save(grid);
 		}
 
+		this.update_save = function (grid){
+            get_field_height = grid.size.y;
+            get_field_width = grid.size.x;
+			if (!get_field_height === 1 && get_field_width === 1))
+				return;
+            grid_width();
+            grid_height();
+            grid_values();
+		}
+		
         /* рандомная заливка для тестов */
         this.randomFill = function () {
             var i, j, fill, fillRnd, grid = new Grid(), upd = new Update();
