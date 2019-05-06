@@ -1,15 +1,12 @@
 'use strict'; //ES5 строгий режим
 var console;
-
-//var width = 400;
-//var height = 200;
-
 var CELL_SIZE = 16; //размер клетки
 var cells = [], buffCells = [];
 var timeout = 30; //задержка для автоплея
 var canvas, game;
 
-var length = 1; //для писоса
+var get_field_width = 1;
+var get_field_height = 1;
 
 function init() {
 
@@ -42,6 +39,9 @@ function init() {
 
         this.size.x = field_width;//parseInt(canvas.width / CELL_SIZE, 10);
         this.size.y = field_height;//parseInt(canvas.height / CELL_SIZE, 10);
+		
+		get_field_height = field_height;
+		get_field_width = field_width;
         //this.size.x = canvas.width;
         //this.size.y = canvas.height;
 
@@ -306,6 +306,15 @@ function init() {
 function set_cell (i, j, value){
     cells[i][j] = parseInt(value) === 1;
 }
+function grid_width (){ return get_field_width; }
+function grid_height (){ return get_field_height; }
 
+function grid_values(){
+	var res = new Array();
+	for (i = 0; i < grid_width(); i++) 
+        for (j = 0; j < grid_height(); j++) 
+			res.push(cells[i][j]? 1 : 0);
+	return res;
+}
 
 window.onload = init();
