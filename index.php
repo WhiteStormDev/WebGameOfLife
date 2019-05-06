@@ -130,7 +130,10 @@
 							</script>";
 							if ($passwordCorrect)
 							{
-								
+								$currentFieldWidth;
+								$currentFieldHeight;
+								$queryUpdateWorlds = 'UPDATE `Worlds` SET `Field_Width` = ' . $currentFieldWidth . ', `Field_Height` = ' . $currentFieldHeight . ' WHERE `Id` = ' . $tryId;
+								$queryDeleteExistCells = 'DELETE FROM `Cell` WHERE `World_Id` = ' . $tryId;
 							}
 						}
 						//'INSERT INTO `Worlds`(`Name`, `Password`, `Field_Width`, `FORM_ID`) VALUES (SysDate(), "' . $_POST['name'] . '", "' . $_POST['message'] . '", "' . $id . '")' ;
