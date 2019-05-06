@@ -43,8 +43,8 @@
            </div>
            <div class"row">
 						<div class="col s12">
-             	<input type = "submit" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
-             	<input type = "submit" id = "submitbtn" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
+             	<input type = "submit" id = "submitload" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
+             	<input type = "submit" id = "submitsave" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
 					 	</div>
 						 <!-- <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/> -->
            </div>
@@ -57,13 +57,15 @@
 					<canvas id="back" class="back"></canvas>
 					<div class="card" style="margin: 5px;" >
 						<div class="row">
-							<div class="col s8">
+							<div class="col s6">
 								<input type="button" class = "waves-effect waves-light btn" id="clear" value="Очистить поле">
 								<input type="button" class = "waves-effect waves-light btn" id="rand" value="Случайное поле">
-								<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
+
 							</div>
-							<div class="col s4">
+							<div class="col s6">
+								<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
 								<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
+
 							</div>
 						</div>
 						<div class="row">
@@ -151,7 +153,7 @@
 									{
 										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
 										printf('<p>%s | </p>', $currentCellValue);
-										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $r . ', ' . $c . ', ' . $currentCellValue . ', ' . $tryId . ')';
+										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
 										mysqli_query($db, $queryAddCell);
 									}
 								}
@@ -181,7 +183,7 @@
 									for ($r = 0; $r < $currentFieldHeight; $r++)
 									{
 										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
-										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $r . ', ' . $c . ', ' . $currentCellValue . ', ' . $tryId . ')';
+										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
 										mysqli_query($db, $queryAddCell);
 									}
 								}
@@ -195,9 +197,23 @@
 					else
           if (isset($_POST['loadgame']))
           {
-            $takeWorldIdQuery = 'SELECT `Id`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '" AND `Password` = "' . $password . '"';
+            $takeWorldIdQuery = 'SELECT `Id`, `Password`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
             $result = mysqli_query($db, $takeWorldIdQuery);
-            $currentWorld = mysqli_fetch_array($result);
+            if ($currentWorld = mysqli_fetch_array($result))
+						{
+							if ($password != $currentWorld["Password"])
+							{
+								echo "<script type = 'text/javascript'>
+									alert(\"Неверный пароль\");
+								</script>";
+								return;
+							}
+						} else {
+							echo "<script type = 'text/javascript'>
+								alert(\"Мира с таким названием не существует\");
+							</script>";
+							return;
+						}
 
 
             $takeMatrixQuery = 'SELECT `Row_Index`, `Column_Index`, `Value` FROM `Cell` WHERE `World_Id` = "' . $currentWorld["Id"] . '" ORDER BY `Row_Index`, `Column_Index`';
@@ -209,6 +225,7 @@
 						echo "<script type = 'text/javascript'>
 							updateTextboxes('$field_width', '$field_height');
 							init();
+							document.getElementById('autoplay').onUpdate();
 						</script>";
 						while ($cell = mysqli_fetch_array($matrixResult))
 						{

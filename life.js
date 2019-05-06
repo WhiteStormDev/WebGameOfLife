@@ -100,29 +100,30 @@ function init() {
                         upd.fillCell(i, j);
             //Перессчитываем ячейки
             upd.cells();
-			update_save(grid);
+            //upd.update_save(grid);
         };
 
-		this.redraw = function () {
-            var i, j, grid = new Grid(), upd = new Update();
-            upd.clear();
-			for (i = 0; i < grid.size.x; i++)
-                for (j = 0; j < grid.size.y; j++)
-                    if (cells[i][j] === true)
-                        upd.fillCell(i, j);
-			update_save(grid);
-		}
+        this.redraw = function () {
+                var i, j, grid = new Grid(), upd = new Update();
+                upd.clear();
+                for (i = 0; i < grid.size.x; i++)
+                    for (j = 0; j < grid.size.y; j++)
+                        if (cells[i][j] === true)
+                            upd.fillCell(i, j);
+                //upd.update_save(grid);
+            }
 
-		this.update_save = function (grid){
+        this.update_save = function (grid){
+            //alert('Update JS called!');
             get_field_height = grid.size.y;
             get_field_width = grid.size.x;
-			if (!get_field_height === 1 && get_field_width === 1))
-				return;
+            if (get_field_height === 1 && get_field_width === 1)
+                return;
             grid_width();
             grid_height();
             grid_values();
-		}
-		
+        }
+
         /* рандомная заливка для тестов */
         this.randomFill = function () {
             var i, j, fill, fillRnd, grid = new Grid(), upd = new Update();
@@ -275,7 +276,7 @@ function init() {
         };
     }
 
-    var gameGrid = new Grid(), gameUpd = new Update(), clearBtn, randBtn, stepBtn, gliderBtn;
+    var gameGrid = new Grid(), gameUpd = new Update(), clearBtn, randBtn, stepBtn, gliderBtn, saveBtn;
     gameGrid.draw();
     gameGrid.fill();
 
@@ -285,7 +286,7 @@ function init() {
 
     //Кнопка рандомизации
     randBtn = document.getElementById('rand');
-    randBtn.onclick = function () { init(); gameUpd.clear(); gameUpd.randomFill(); };
+    randBtn.onclick = function () { init(); gameUpd.clear(); gameUpd.randomFill(); gameUpd.update_save(gameGrid);};
 
     //Кнопка шага
     stepBtn = document.getElementById('step');
@@ -322,9 +323,15 @@ function init() {
         gameUpd.fill();
     };
 
-	stepBtn.onUpdate = function(){
-        gameUpd.redraw();
-	}
+  	stepBtn.onUpdate = function(){
+          gameUpd.redraw();
+  	}
+
+    saveBtn = document.getElementById('submitsave');
+    saveBtn.onclick = function(){
+        //alert('submited!');
+        gameUpd.update_save(gameGrid);
+    }
 }
 function set_cell (i, j, value){
     cells[i][j] = parseInt(value) === 1;
@@ -332,14 +339,20 @@ function set_cell (i, j, value){
 function toggle_cell (i, j){
 	cells[i][j] = ! cells[i][j];
 }
-function grid_width (){ document.cookie = "grid_width=" + get_field_width + "; expires = 60000"; }
-function grid_height (){ document.cookie = "grid_height=" + get_field_height + "; expires = 60000"; }
+function grid_width (){   document.cookie = "grid_width=" + get_field_width + "; expires = 60000"; }
+function grid_height (){  document.cookie = "grid_height=" + get_field_height + "; expires = 60000"; }
 
 function grid_values(){
-	var res = new Array();
-	for (i = 0; i < grid_width(); i++)
-        for (j = 0; j < grid_height(); j++)
+  var deb = "";
+	for (var i = 0; i < get_field_width; i++)
+        for (var j = 0; j < get_field_height; j++)
+        {
           document.cookie="cell"+i+"_"+j+"=" + (cells[i][j]? 1 : 0) + "; expires = 60000";
+          deb += (cells[i][j]? 1 : 0) + " " + ((j == 0)? "\r\n" : "");
+        }
+  //alert(deb);
+
+
 }
 
 function printMousePos(event) {
@@ -347,8 +360,8 @@ function printMousePos(event) {
   //  " - clientY: " + event.clientY);
   var bound = document.getElementById('back').getBoundingClientRect();
 
-  var mouseX = Math.round((event.x - Math.round(bound.left)) / CELL_SIZE) - 1;
-  var mouseY = Math.round((event.y - Math.round(bound.top)) / CELL_SIZE) - 1;
+  var mouseX = Math.round((event.x - Math.round(bound.left)) / CELL_SIZE + .5) - 1;
+  var mouseY = Math.round((event.y - Math.round(bound.top)) / CELL_SIZE + .5) - 1;
 
   toggle_cell(mouseX, mouseY);
   document.getElementById('autoplay').onUpdate();
