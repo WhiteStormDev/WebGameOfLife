@@ -124,23 +124,69 @@
 						{
 							$tryId = $tryTakeExistWorld["Id"];
 							$passwordCorrect = $password == $tryTakeExistWorld["Password"];
-							$saveMessage = $passwordCorrect ? 'Последнее сохранение мира обновленно' : 'Мир с таким именем уже существует, введен неверный пароль';
-							echo "<script type = 'text/javascript'>
-								alert('$saveMessage');
-							</script>";
+
+
 							if ($passwordCorrect)
 							{
-								$currentFieldWidth;
-								$currentFieldHeight;
+								echo "<script type = 'text/javascript'>
+									grid_width();
+									grid_height();
+									grid_values();
+								</script>";
+								$currentFieldWidth = $_COOKIE['grid_width'];
+								$currentFieldHeight = $_COOKIE['grid_height'];
+
 								$queryUpdateWorlds = 'UPDATE `Worlds` SET `Field_Width` = ' . $currentFieldWidth . ', `Field_Height` = ' . $currentFieldHeight . ' WHERE `Id` = ' . $tryId;
 								$queryDeleteExistCells = 'DELETE FROM `Cell` WHERE `World_Id` = ' . $tryId;
+
+								mysqli_query($db, $queryUpdateWorlds);
+								mysqli_query($db, $queryDeleteExistCells);
+
+								for ($c = 0; $c < $currentFieldWidth; $c++)
+								{
+									for ($r = 0; $r < $currentFieldHeight; $r++)
+									{
+										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
+										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $r . ', ' . $c . ', ' . $currentCellValue . ', ' . $tryId . ')';
+										mysqli_query($db, $queryAddCell);
+									}
+								}
+								$saveMessage = 'Последнее сохранение мира обновленно';
+							} else {
+								$saveMessage = 'Мир с таким именем уже существует, введен неверный пароль';
+							}
+						} else {
+							echo "<script type = 'text/javascript'>
+								grid_width();
+								grid_height();
+								grid_values();
+							</script>";
+							$currentFieldWidth = $_COOKIE['grid_width'];
+							$currentFieldHeight = $_COOKIE['grid_height'];
+
+							$queryAddWorld = 'INSERT INTO `Worlds` (`Name`, `Password`, `Field_Width`, `Field_Height`) VALUES ("' . $world_name .'", "' . $password . '", ' . $currentFieldWidth . ', ' . $currentFieldHeight . ')';
+							$queryTakeWorldId = 'SELECT `Id` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
+
+							mysqli_query($db, $queryAddWorld);
+							$newWorldResult = mysqli_query($db, $queryTakeWorldId);
+							if ($newWorldId = mysqli_fetch_array($newWorldResult))
+							{
+								$tryId = $newWorldId["Id"];
+								for ($c = 0; $c < $currentFieldWidth; $c++)
+								{
+									for ($r = 0; $r < $currentFieldHeight; $r++)
+									{
+										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
+										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $r . ', ' . $c . ', ' . $currentCellValue . ', ' . $tryId . ')';
+										mysqli_query($db, $queryAddCell);
+									}
+								}
+								$saveMessage = "Новый мир сохранен!";
 							}
 						}
-						//'INSERT INTO `Worlds`(`Name`, `Password`, `Field_Width`, `FORM_ID`) VALUES (SysDate(), "' . $_POST['name'] . '", "' . $_POST['message'] . '", "' . $id . '")' ;
-						// echo "<script type = 'text/javascript'>
-						// 	init();
-						// 	alert(\"saved\");
-						// </script>";
+						echo "<script type = 'text/javascript'>
+							alert('$saveMessage');
+						</script>";
           }
 					else
           if (isset($_POST['loadgame']))
@@ -153,12 +199,9 @@
             $takeMatrixQuery = 'SELECT `Row_Index`, `Column_Index`, `Value` FROM `Cell` WHERE `World_Id` = "' . $currentWorld["Id"] . '" ORDER BY `Row_Index`, `Column_Index`';
             $matrixResult = mysqli_query($db, $takeMatrixQuery);
 
-            // $takeHeightWidthQuery = 'SELECT MAX(`Row_Index`), MAX(`Column_Index`) FROM `Cell`';
-            // $heightWidthResult = mysqli_query($db, $takeHeightWidthQuery);
-
             $field_width = $currentWorld["Field_Width"];
 						$field_height = $currentWorld["Field_Height"];
-						//printf('<p>%s | %s</p>', $field_width, $field_height);
+
 						echo "<script type = 'text/javascript'>
 							updateTextboxes('$field_width', '$field_height');
 							init();
