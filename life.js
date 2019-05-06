@@ -40,8 +40,8 @@ function init() {
         this.size.x = field_width;//parseInt(canvas.width / CELL_SIZE, 10);
         this.size.y = field_height;//parseInt(canvas.height / CELL_SIZE, 10);
 
-		get_field_height = field_height;
-		get_field_width = field_width;
+		//get_field_height = field_height;
+		//get_field_width = field_width;
         //this.size.x = canvas.width;
         //this.size.y = canvas.height;
 
@@ -63,9 +63,9 @@ function init() {
         /* рисуем сетку */
         this.draw = function () {
             var i;
-            canvas.translate(0.5, 0.5);
+            canvas.translate(0, 0);
             canvas.strokeStyle = "#eee"; // цвет линии
-            canvas.lineWidth = 0.4;
+            canvas.lineWidth = .4;
             canvas.beginPath();
             for (i = 0; i <= field_width; i++) {
                 canvas.moveTo(0, i * CELL_SIZE);
@@ -87,9 +87,7 @@ function init() {
         };
 
         this.fillCell = function (x, y) {
-            var cell_width = CELL_SIZE;// * canvas.height / canvas.width;
-            var cell_heigth = CELL_SIZE;
-            game.fillRect(x * cell_width, y * cell_heigth, cell_width + 1, cell_heigth + 1);
+            game.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE + 1, CELL_SIZE + 1);
         };
 
         this.fill = function () {
@@ -102,7 +100,23 @@ function init() {
                         upd.fillCell(i, j);
             //Перессчитываем ячейки
             upd.cells();
+            get_field_height = grid.size.y;
+            get_field_width = grid.size.x;
+            grid_width();
+            grid_height();
+            grid_values();
         };
+
+		this.redraw = function () {
+            var i, j, grid = new Grid(), upd = new Update();
+            upd.clear();
+			for (i = 0; i < grid.size.x; i++)
+                for (j = 0; j < grid.size.y; j++)
+                    if (cells[i][j] === true)
+                        upd.fillCell(i, j);
+      get_field_height = grid.size.y;
+      get_field_width = grid.size.x;
+		}
 
         /* рандомная заливка для тестов */
         this.randomFill = function () {
@@ -302,20 +316,39 @@ function init() {
         gameUpd.newUnit('gosper');
         gameUpd.fill();
     };
+
+	stepBtn.onUpdate = function(){
+        gameUpd.redraw();
+	}
 }
 function set_cell (i, j, value){
     cells[i][j] = parseInt(value) === 1;
 }
-function grid_width (){ document.cookie = "grid_width=" + get_field_width; }
-function grid_height (){ document.cookie = "grid_height=" + get_field_height; }
+function toggle_cell (i, j){
+	cells[i][j] = ! cells[i][j];
+}
+function grid_width (){ document.cookie = "grid_width=" + get_field_width + "; expires = 60000"; }
+function grid_height (){ document.cookie = "grid_height=" + get_field_height + "; expires = 60000"; }
 
 function grid_values(){
 	var res = new Array();
 	for (i = 0; i < grid_width(); i++)
         for (j = 0; j < grid_height(); j++)
-          document.cookie="cell"+i+"_"+j+"=" + (cells[i][j]? 1 : 0);
-			//res.push(cells[i][j]? 1 : 0);
-	//return res;
+          document.cookie="cell"+i+"_"+j+"=" + (cells[i][j]? 1 : 0) + "; expires = 60000";
 }
+
+function printMousePos(event) {
+  //alert("clientX: " + event.clientX +
+  //  " - clientY: " + event.clientY);
+  var bound = document.getElementById('back').getBoundingClientRect();
+
+  var mouseX = Math.round((event.x - Math.round(bound.left)) / CELL_SIZE) - 1;
+  var mouseY = Math.round((event.y - Math.round(bound.top)) / CELL_SIZE) - 1;
+
+  toggle_cell(mouseX, mouseY);
+  document.getElementById('autoplay').onUpdate();
+
+}
+document.getElementById('back').addEventListener("click", printMousePos);
 
 window.onload = init();

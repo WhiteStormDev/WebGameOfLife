@@ -128,18 +128,21 @@
 
 							if ($passwordCorrect)
 							{
-								echo "<script type = 'text/javascript'>
-									grid_width();
-									grid_height();
-									grid_values();
-								</script>";
+								// echo "<script type = 'text/javascript'>
+								// 	grid_width();
+								// 	grid_height();
+								// 	grid_values();
+								// </script>";
 								$currentFieldWidth = $_COOKIE['grid_width'];
 								$currentFieldHeight = $_COOKIE['grid_height'];
 
-								$queryUpdateWorlds = 'UPDATE `Worlds` SET `Field_Width` = ' . $currentFieldWidth . ', `Field_Height` = ' . $currentFieldHeight . ' WHERE `Id` = ' . $tryId;
+								printf('<p>%s | %s</p>', $currentFieldWidth, $currentFieldHeight);
+								$queryUpdateWorldsWidth = 'UPDATE `Worlds` SET `Field_Width` = ' . $currentFieldWidth . ' WHERE `Id` = ' . $tryId;
+								$queryUpdateWorldsHeight = 'UPDATE `Worlds` SET `Field_Height` = ' . $currentFieldHeight . ' WHERE `Id` = ' . $tryId;
 								$queryDeleteExistCells = 'DELETE FROM `Cell` WHERE `World_Id` = ' . $tryId;
 
-								mysqli_query($db, $queryUpdateWorlds);
+								mysqli_query($db, $queryUpdateWorldsWidth);
+								mysqli_query($db, $queryUpdateWorldsHeight);
 								mysqli_query($db, $queryDeleteExistCells);
 
 								for ($c = 0; $c < $currentFieldWidth; $c++)
@@ -147,6 +150,7 @@
 									for ($r = 0; $r < $currentFieldHeight; $r++)
 									{
 										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
+										printf('<p>%s | </p>', $currentCellValue);
 										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $r . ', ' . $c . ', ' . $currentCellValue . ', ' . $tryId . ')';
 										mysqli_query($db, $queryAddCell);
 									}
@@ -156,11 +160,11 @@
 								$saveMessage = 'Мир с таким именем уже существует, введен неверный пароль';
 							}
 						} else {
-							echo "<script type = 'text/javascript'>
-								grid_width();
-								grid_height();
-								grid_values();
-							</script>";
+							// echo "<script type = 'text/javascript'>
+							// 	grid_width();
+							// 	grid_height();
+							// 	grid_values();
+							// </script>";
 							$currentFieldWidth = $_COOKIE['grid_width'];
 							$currentFieldHeight = $_COOKIE['grid_height'];
 
