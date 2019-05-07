@@ -343,16 +343,14 @@ function grid_width (){   document.cookie = "grid_width=" + get_field_width + ";
 function grid_height (){  document.cookie = "grid_height=" + get_field_height + "; expires = 60000"; }
 
 function grid_values(){
-  var deb = "";
+	var values_string = "";
 	for (var i = 0; i < get_field_width; i++)
         for (var j = 0; j < get_field_height; j++)
-        {
-          document.cookie="cell"+i+"_"+j+"=" + (cells[i][j]? 1 : 0) + "; expires = 60000";
-          deb += (cells[i][j]? 1 : 0) + " " + ((j == 0)? "\r\n" : "");
-        }
-  //alert(deb);
-
-
+			values_string += cells[i][j]? 1 : 0;
+          //document.cookie="cell"+i+"_"+j+"=" + (cells[i][j]? 1 : 0) + "; expires = 60000";
+          //deb += (cells[i][j]? 1 : 0) + " " + ((j == 0)? "\r\n" : "");
+	alert(values_string.length + " :  " + values_string);
+    document.cookie = "grid_values=" + values_string + "; expires = 60000";
 }
 
 function printMousePos(event) {

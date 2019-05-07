@@ -147,26 +147,34 @@
 								mysqli_query($db, $queryUpdateWorldsHeight);
 								mysqli_query($db, $queryDeleteExistCells);
 
-								for ($c = 0; $c < $currentFieldWidth; $c++)
-								{
-									for ($r = 0; $r < $currentFieldHeight; $r++)
-									{
-										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
-										printf('<p>%s | </p>', $currentCellValue);
-										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
-										mysqli_query($db, $queryAddCell);
+								$grid_values = $_COOKIE['grid_values'];
+								
+								//for ($c = 0; $c < $currentFieldWidth; $c++)
+								//	for ($r = 0; $r < $currentFieldHeight; $r++)
+								//	{
+										//$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
+										//printf('<p>%s | </p>', $currentCellValue);
+								//		$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
+								//		mysqli_query($db, $queryAddCell);
+								//	}
+								$c = 0; $r = 0;
+								for ($i = 0; $i < strlen($grid_values); $i++){
+									$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' 
+													. $c . ', ' . $r . ', ' . $grid_values[$i] . ', ' . $tryId . ')';
+									mysqli_query($db, $queryAddCell);
+									// after assigment increase rows index
+									$r++;
+									if ($r == $currentFieldHeight){
+										$r = 0;
+										$c ++;	// then increase coluemn number
 									}
 								}
+								
 								$saveMessage = 'Последнее сохранение мира обновленно';
 							} else {
 								$saveMessage = 'Мир с таким именем уже существует, введен неверный пароль';
 							}
 						} else {
-							// echo "<script type = 'text/javascript'>
-							// 	grid_width();
-							// 	grid_height();
-							// 	grid_values();
-							// </script>";
 							$currentFieldWidth = $_COOKIE['grid_width'];
 							$currentFieldHeight = $_COOKIE['grid_height'];
 
@@ -178,13 +186,26 @@
 							if ($newWorldId = mysqli_fetch_array($newWorldResult))
 							{
 								$tryId = $newWorldId["Id"];
-								for ($c = 0; $c < $currentFieldWidth; $c++)
-								{
-									for ($r = 0; $r < $currentFieldHeight; $r++)
-									{
-										$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
-										$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
-										mysqli_query($db, $queryAddCell);
+								// for ($c = 0; $c < $currentFieldWidth; $c++)
+								// {
+									// for ($r = 0; $r < $currentFieldHeight; $r++)
+									// {
+										// $currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
+										// $queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
+										// mysqli_query($db, $queryAddCell);
+									// }
+								// }
+								$grid_values = $_COOKIE['grid_values'];
+								$c = 0; $r = 0;
+								for ($i = 0; $i < strlen($grid_values); $i++){
+									$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' 
+													. $c . ', ' . $r . ', ' . $grid_values[$i] . ', ' . $tryId . ')';
+									mysqli_query($db, $queryAddCell);
+									// after assigment increase rows index
+									$r++;
+									if ($r == $currentFieldHeight){
+										$r = 0;
+										$c ++;	// then increase coluemn number
 									}
 								}
 								$saveMessage = "Новый мир сохранен!";
