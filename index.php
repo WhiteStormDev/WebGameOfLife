@@ -43,8 +43,8 @@
            </div>
            <div class"row">
 						<div class="col s12">
-             	<input type = "submit" id = "submitload" class = "waves-effect waves-light btn" name = "loadgame" Value = "Загрузить"/>
-             	<input type = "submit" id = "submitsave" class = "waves-effect waves-light btn" name = "savegame" Value = "Сохранить"/>
+             	<input type = "image" src="icons/load.png" id = "submitload" class = "waves-effect waves-light btn" name = "loadgame" value = "submit"/>
+             	<input type = "image" src="icons/save.png" id = "submitsave" class = "waves-effect waves-light btn" name = "savegame" value = "submit"/>
 					 	</div>
 						 <!-- <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/> -->
            </div>
@@ -58,13 +58,18 @@
 					<div class="card" style="margin: 5px;" >
 						<div class="row">
 							<div class="col s6">
-								<input type="button" class = "waves-effect waves-light btn" id="clear" value="Очистить поле">
-								<input type="button" class = "waves-effect waves-light btn" id="rand" value="Случайное поле">
+								<input type="image" src="icons/new.png" class = "waves-effect waves-light btn" id="clear">
+								<input type="image" src="icons/random.png" class = "waves-effect waves-light btn" id="rand">
 
 							</div>
 							<div class="col s6">
-								<input type="button" class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
-								<input type="button" class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
+								<input type="image" src="icons/step.png"  class = "waves-effect waves-light btn" id="step" value="Следующее поколение">
+								<input type="image" src="icons/autoplay.png"  class = "waves-effect waves-light btn" id="autoplay" value="Автовоспроизведение">
+								
+								<input type="image" src="icons/touch.png"  class = "waves-effect waves-light btn" id="touch">
+								<input type="image" src="icons/pencil.png"  class = "waves-effect waves-light btn" id="pencil">
+								<input type="image" src="icons/fill.png"  class = "waves-effect waves-light btn" id="square">
+								<input type="image" src="icons/eraser.png" class = "waves-effect waves-light btn" id="erase">
 
 							</div>
 						</div>

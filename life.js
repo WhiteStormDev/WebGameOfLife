@@ -276,7 +276,9 @@ function init() {
         };
     }
 
-    var gameGrid = new Grid(), gameUpd = new Update(), clearBtn, randBtn, stepBtn, gliderBtn, saveBtn;
+    var gameGrid = new Grid(), gameUpd = new Update(), 
+		clearBtn, randBtn, stepBtn, gliderBtn, saveBtn,
+		touchBtn, pencilBtn, fillBtn, eraseBtn;
     gameGrid.draw();
     gameGrid.fill();
 
@@ -329,13 +331,36 @@ function init() {
 
     saveBtn = document.getElementById('submitsave');
     saveBtn.onclick = function(){
-        //alert('submited!');
         gameUpd.update_save(gameGrid);
+    }
+	
+	touchBtn = document.getElementById('touch');
+    touchBtn.onclick = function(){
+        draw_style = 'touch';
+    }
+	pencilBtn = document.getElementById('pencil');
+    pencilBtn.onclick = function(){
+		//alert('pen');
+        draw_style = 'pencil';
+    }
+	fillBtn = document.getElementById('square');
+    fillBtn.onclick = function(){
+		//alert('fil');
+        draw_style = 'fill';
+    }
+	eraseBtn = document.getElementById('erase');
+    eraseBtn.onclick = function(){
+		//alert('erase');
+        draw_style = 'erase';
     }
 }
 function set_cell (i, j, value){
     cells[i][j] = parseInt(value) === 1;
 }
+function set_cell_bool (i, j, value){
+	cells[i][j] = value;
+}
+
 function toggle_cell (i, j){
 	cells[i][j] = ! cells[i][j];
 }
@@ -347,24 +372,54 @@ function grid_values(){
 	for (var i = 0; i < get_field_width; i++)
         for (var j = 0; j < get_field_height; j++)
 			values_string += cells[i][j]? 1 : 0;
-          //document.cookie="cell"+i+"_"+j+"=" + (cells[i][j]? 1 : 0) + "; expires = 60000";
-          //deb += (cells[i][j]? 1 : 0) + " " + ((j == 0)? "\r\n" : "");
-	alert(values_string.length + " :  " + values_string);
     document.cookie = "grid_values=" + values_string + "; expires = 60000";
 }
 
-function printMousePos(event) {
-  //alert("clientX: " + event.clientX +
-  //  " - clientY: " + event.clientY);
-  var bound = document.getElementById('back').getBoundingClientRect();
+var draw_style = 'touch';
 
-  var mouseX = Math.round((event.x - Math.round(bound.left)) / CELL_SIZE + .5) - 1;
-  var mouseY = Math.round((event.y - Math.round(bound.top)) / CELL_SIZE + .5) - 1;
-
-  toggle_cell(mouseX, mouseY);
-  document.getElementById('autoplay').onUpdate();
-
+var mouseX = 0, mouseY = 0, mouseXprev = 0, mouseYprev = 0, mousePressed = false;
+function getMousePosition (e){
+    var bound = document.getElementById('back').getBoundingClientRect();
+    mouseX = Math.round((e.x - Math.round(bound.left)) / CELL_SIZE + .5) - 1;
+    mouseY = Math.round((e.y - Math.round(bound.top)) / CELL_SIZE + .5) - 1;
 }
-document.getElementById('back').addEventListener("click", printMousePos);
+
+function mouseDown(e) {
+	getMousePosition(e);
+	if (draw_style === 'touch'){
+		toggle_cell(mouseX, mouseY);
+		document.getElementById('autoplay').onUpdate();
+	}else{
+		mousePressed = true;
+		mouseXprev = mouseX;
+		mouseYprev = mouseY;
+		mouseMove();
+	}
+}
+function mouseUp(e){
+	if (mousePressed === false)return;
+	
+	mousePressed = false;
+	if (draw_style !== 'fill')
+		return;
+	getMousePosition(e);
+	for (var i = Math.min(mouseX, mouseXprev); i <= Math.max(mouseX, mouseXprev); i++)
+	for (var j = Math.min(mouseY, mouseYprev); j <= Math.max(mouseY, mouseYprev); j++)
+		set_cell_bool(i, j, true);
+	document.getElementById('autoplay').onUpdate();
+}
+function mouseMove(e){
+	if (mousePressed === false)
+		return;
+	if (draw_style === 'fill')
+		return;
+	
+	getMousePosition(e);
+	set_cell_bool(mouseX, mouseY, draw_style === 'pencil');
+	document.getElementById('autoplay').onUpdate();
+}
+document.getElementById('back').addEventListener("mousedown", mouseDown);
+document.getElementById('back').addEventListener("mouseup", mouseUp);
+document.getElementById('back').addEventListener("mousemove", mouseMove);
 
 window.onload = init();
