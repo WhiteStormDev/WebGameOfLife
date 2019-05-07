@@ -1,8 +1,10 @@
 <?php
 	header("Content-Type: text/html; charset=utf-8");
 	session_start ();
-	$db = mysqli_connect('localhost', 'root', 'password');
-	mysqli_select_db($db, 'GameOfLife');
+	$db = mysqli_connect('localhost', 'prohorchenko', 'NewPass19');
+	//$queryAddW = 'INSERT INTO `Worlds` (`Name`, `Password`,`Field_Height`, `Field_Width`, ``) VALUES ("Tryworld", "password", 10, 10)';
+
+	mysqli_select_db($db, 'prohorchenko');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,15 +45,13 @@
            </div>
            <div class"row">
 						<div class="col s12">
-             	<input type = "image" src="icons/load.png" id = "submitload" class = "waves-effect waves-light btn" name = "loadgame" value = "submit"/>
-             	<input type = "image" src="icons/save.png" id = "submitsave" class = "waves-effect waves-light btn" name = "savegame" value = "submit"/>
+             	<input type = "submit" id = "submitload" class = "waves-effect waves-light btn" name = "loadgame" value = "Загрузить"/>
+             	<input type = "submit" id = "submitsave" class = "waves-effect waves-light btn" name = "savegame" value = "Сохранить"/>
 					 	</div>
 						 <!-- <input type = "button" class = "waves-effect waves-light btn" name = "newgame" onclick = "spawnGameField()" Value = "Новая игра"/> -->
            </div>
           </div>
         </form>
-
-
 				<div class="card hoverable">
 					<canvas id="game" class="game"></canvas>
 					<canvas id="back" class="back"></canvas>
@@ -76,11 +76,11 @@
 						<div class="row">
 							<div class="col s12">
 								<div class="input-field col s2">
-									<input value="128" id="field_width" type="text" class="validate">
+									<input type="number" name="width" min="10" max="160" value="128" id="field_width">
 									<span class="helper-text" data-error="wrong" data-success="right">Ширина (кл.)</span>
 								</div>
 								<div class="input-field col s2">
-									<input value="50" id="field_height" type="text" class="validate">
+									<input type="number" name="height" min="10" max="50" value="50" id="field_height">
 									<span class="helper-text" data-error="wrong" data-success="right">Высота (кл.)</span>
 								</div>
 							</div>
@@ -104,15 +104,6 @@
 						return false;
 
 					}
-					// $(document).ready(function(){
-					// 	$('#submitbtn').click (function(){
-					// 		$.post('saveGame.php',
-					// 		{id: <php? echo ?>, world_name: $('input[name = "world_name"]').val(), password: $('input[name = "password"]').val()},
-					// 		function (data){alert("Игра сохранена");
-					// 						document.location.href = document.location;
-					// 		});
-					// 	});
-					// })
 				</script>
         <?php
           if (isset($_POST['world_name'])) {$world_name = $_POST['world_name'];}
@@ -120,148 +111,110 @@
 
           if (isset($_POST['savegame']))
           {
-						$rowIndex;
-						$columnIndex;
-						$value;
+			$rowIndex;
+			$columnIndex;
+			$value;
 
-						$queryTryTakeExistWorld = 'SELECT `Id`, `Password`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
-						$takeExistResult = mysqli_query($db, $queryTryTakeExistWorld);
+			$queryTryTakeExistWorld = 'SELECT `Id`, `Password`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
+			$takeExistResult = mysqli_query($db, $queryTryTakeExistWorld);
+			
+			
+			$currentFieldWidth = $_COOKIE['grid_width'];
+			$currentFieldHeight = $_COOKIE['grid_height'];
 
-						if($tryTakeExistWorld = mysqli_fetch_array($takeExistResult))
-						{
-							$tryId = $tryTakeExistWorld["Id"];
-							$passwordCorrect = $password == $tryTakeExistWorld["Password"];
+			if ($currentFieldWidth * $currentFieldHeight > 160 * 50){
+				echo "<script type = 'text/javascript'>
+					alert('Площадь сохраняемого поля не должна превышать 160 * 50 = 8000 клеток!');
+				</script>";
+				return;
+			}
+			$grid_values_portion_count = $_COOKIE['grid_portions_count'];
+			
+			$grid_values = "";
+			for ($i = 0; $i < $grid_values_portion_count; $i++)
+				$grid_values = $grid_values . $_COOKIE['grid_values_' . ($i)];
+			
+			if($tryTakeExistWorld = mysqli_fetch_array($takeExistResult))
+			{
+				$tryId = $tryTakeExistWorld["Id"];
+				$passwordCorrect = $password == $tryTakeExistWorld["Password"];
+				if ($passwordCorrect)
+				{
+					$queryUpdateWorldsWidth = 'UPDATE `Worlds` SET `Field_Width` = ' . $currentFieldWidth . ' WHERE `Id` = ' . $tryId;
+					$queryUpdateWorldsHeight = 'UPDATE `Worlds` SET `Field_Height` = ' . $currentFieldHeight . ' WHERE `Id` = ' . $tryId;
+					$queryDeleteExistCells = 'DELETE FROM `Cell` WHERE `World_Id` = ' . $tryId;
 
+					mysqli_query($db, $queryUpdateWorldsWidth);
+					mysqli_query($db, $queryUpdateWorldsHeight);
+					mysqli_query($db, $queryDeleteExistCells);
+					
+					$queryUpdateWorldsMatrix = 'UPDATE `Worlds` SET `Matrix` = "' . $grid_values . '" WHERE `Id` = ' . $tryId;
+					mysqli_query($db, $queryUpdateWorldsMatrix);
+					
+					$saveMessage = 'Последнее сохранение мира обновленно';
+				} else {
+					$saveMessage = 'Мир с таким именем уже существует, введен неверный пароль';
+				}
+			} else {					
+				$queryAddWorld = 'INSERT INTO `Worlds` (`Name`, `Password`, `Field_Width`, `Field_Height`, `Matrix`) VALUES ("' 
+						. $world_name .'", "' . $password . '", ' . $currentFieldWidth . ', ' . $currentFieldHeight . ', "' .  $grid_values . '")';
+				$queryTakeWorldId = 'SELECT `Id` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
 
-							if ($passwordCorrect)
-							{
-								// echo "<script type = 'text/javascript'>
-								// 	grid_width();
-								// 	grid_height();
-								// 	grid_values();
-								// </script>";
-								$currentFieldWidth = $_COOKIE['grid_width'];
-								$currentFieldHeight = $_COOKIE['grid_height'];
-
-								printf('<p>%s | %s</p>', $currentFieldWidth, $currentFieldHeight);
-								$queryUpdateWorldsWidth = 'UPDATE `Worlds` SET `Field_Width` = ' . $currentFieldWidth . ' WHERE `Id` = ' . $tryId;
-								$queryUpdateWorldsHeight = 'UPDATE `Worlds` SET `Field_Height` = ' . $currentFieldHeight . ' WHERE `Id` = ' . $tryId;
-								$queryDeleteExistCells = 'DELETE FROM `Cell` WHERE `World_Id` = ' . $tryId;
-
-								mysqli_query($db, $queryUpdateWorldsWidth);
-								mysqli_query($db, $queryUpdateWorldsHeight);
-								mysqli_query($db, $queryDeleteExistCells);
-
-								$grid_values = $_COOKIE['grid_values'];
-								
-								//for ($c = 0; $c < $currentFieldWidth; $c++)
-								//	for ($r = 0; $r < $currentFieldHeight; $r++)
-								//	{
-										//$currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
-										//printf('<p>%s | </p>', $currentCellValue);
-								//		$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
-								//		mysqli_query($db, $queryAddCell);
-								//	}
-								$c = 0; $r = 0;
-								for ($i = 0; $i < strlen($grid_values); $i++){
-									$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' 
-													. $c . ', ' . $r . ', ' . $grid_values[$i] . ', ' . $tryId . ')';
-									mysqli_query($db, $queryAddCell);
-									// after assigment increase rows index
-									$r++;
-									if ($r == $currentFieldHeight){
-										$r = 0;
-										$c ++;	// then increase coluemn number
-									}
-								}
-								
-								$saveMessage = 'Последнее сохранение мира обновленно';
-							} else {
-								$saveMessage = 'Мир с таким именем уже существует, введен неверный пароль';
-							}
-						} else {
-							$currentFieldWidth = $_COOKIE['grid_width'];
-							$currentFieldHeight = $_COOKIE['grid_height'];
-
-							$queryAddWorld = 'INSERT INTO `Worlds` (`Name`, `Password`, `Field_Width`, `Field_Height`) VALUES ("' . $world_name .'", "' . $password . '", ' . $currentFieldWidth . ', ' . $currentFieldHeight . ')';
-							$queryTakeWorldId = 'SELECT `Id` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
-
-							mysqli_query($db, $queryAddWorld);
-							$newWorldResult = mysqli_query($db, $queryTakeWorldId);
-							if ($newWorldId = mysqli_fetch_array($newWorldResult))
-							{
-								$tryId = $newWorldId["Id"];
-								// for ($c = 0; $c < $currentFieldWidth; $c++)
-								// {
-									// for ($r = 0; $r < $currentFieldHeight; $r++)
-									// {
-										// $currentCellValue = $_COOKIE['cell' . $c . '_' . $r];
-										// $queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' . $c . ', ' . $r . ', ' . $currentCellValue . ', ' . $tryId . ')';
-										// mysqli_query($db, $queryAddCell);
-									// }
-								// }
-								$grid_values = $_COOKIE['grid_values'];
-								$c = 0; $r = 0;
-								for ($i = 0; $i < strlen($grid_values); $i++){
-									$queryAddCell = 'INSERT INTO `Cell` (`Row_Index`, `Column_Index`, `Value`, `World_Id`) VALUES (' 
-													. $c . ', ' . $r . ', ' . $grid_values[$i] . ', ' . $tryId . ')';
-									mysqli_query($db, $queryAddCell);
-									// after assigment increase rows index
-									$r++;
-									if ($r == $currentFieldHeight){
-										$r = 0;
-										$c ++;	// then increase coluemn number
-									}
-								}
-								$saveMessage = "Новый мир сохранен!";
-							}
-						}
-						echo "<script type = 'text/javascript'>
-							alert('$saveMessage');
-						</script>";
-          }
-					else
-          if (isset($_POST['loadgame']))
-          {
-            $takeWorldIdQuery = 'SELECT `Id`, `Password`, `Field_Width`, `Field_Height` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
+				mysqli_query($db, $queryAddWorld);
+				
+				$saveMessage = "Новый мир сохранен!";
+			}
+			echo "<script type = 'text/javascript'>
+				alert('$saveMessage');
+			</script>";
+		}
+		else
+	    if (isset($_POST['loadgame'])){
+			
+            $takeWorldIdQuery = 'SELECT `Id`, `Password`, `Field_Width`, `Field_Height`, `Matrix` FROM `Worlds` WHERE `Name` = "' . $world_name . '"';
             $result = mysqli_query($db, $takeWorldIdQuery);
-            if ($currentWorld = mysqli_fetch_array($result))
-						{
-							if ($password != $currentWorld["Password"])
-							{
-								echo "<script type = 'text/javascript'>
-									alert(\"Неверный пароль\");
-								</script>";
-								return;
-							}
-						} else {
-							echo "<script type = 'text/javascript'>
-								alert(\"Мира с таким названием не существует\");
-							</script>";
-							return;
-						}
-
-
-            $takeMatrixQuery = 'SELECT `Row_Index`, `Column_Index`, `Value` FROM `Cell` WHERE `World_Id` = "' . $currentWorld["Id"] . '" ORDER BY `Row_Index`, `Column_Index`';
-            $matrixResult = mysqli_query($db, $takeMatrixQuery);
-
-            $field_width = $currentWorld["Field_Width"];
-						$field_height = $currentWorld["Field_Height"];
-
-						echo "<script type = 'text/javascript'>
-							updateTextboxes('$field_width', '$field_height');
-							init();
-							document.getElementById('autoplay').onUpdate();
-						</script>";
-						while ($cell = mysqli_fetch_array($matrixResult))
-						{
-							$cellRowInd = $cell["Row_Index"];
-							$cellColInd = $cell["Column_Index"];
-							$cellValue = $cell["Value"];
-							print($cellValue);
-							echo "<script type = \"text/javascript\">set_cell('$cellRowInd','$cellColInd','$cellValue');</script>";
-						}
+            if ($currentWorld = mysqli_fetch_array($result)){
+				if ($password != $currentWorld["Password"])
+				{
+					echo "<script type = 'text/javascript'>
+						alert(\"Неверный пароль\");
+					</script>";
+					return;
+				}
+			} else {
+				echo "<script type = 'text/javascript'>
+					alert(\"Мира с таким названием не существует\");
+				</script>";
+				return;
+			}
+						
+			$gridValues = $currentWorld["Matrix"];
+			$fieldWidth = $currentWorld["Field_Width"];
+			$fieldHeight = $currentWorld["Field_Height"];
+			
+			echo "<script type = 'text/javascript'>
+				updateTextboxes('$fieldWidth', '$fieldHeight');
+				init();
+				document.getElementById('autoplay').onUpdate();
+			</script>";
+			
+			$c = 0; $r = 0;
+			for ($i = 0; $i < strlen($gridValues); $i++){
+				$currentValue = $gridValues[$i];
+				echo "<script type = \"text/javascript\">
+					set_cell('$c','$r','$currentValue');
+				</script>";
+				// after assigment increase rows index
+				$r++;
+				if ($r == $fieldHeight){
+					$r = 0;
+					$c ++;	// then increase coluemn number
+				}
+			}
           }
+		echo "<script type = \"text/javascript\">
+			document.getElementById('autoplay').onUpdate();
+		</script>";
         ?>
       </div>
     </div>

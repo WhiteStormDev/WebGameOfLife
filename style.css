@@ -15,21 +15,4 @@
   /* z-index: 1; */
   margin-bottom: 5px;
 }
-.game-field {
-  width: 100%;
-}
 
-.map {
-    background: #789;
-    height:400px;
-    width:100%;
-}
-.filter {
-    background: green;
-    height:100%;
-    width:100%;
-    margin: 0 auto;
-    position:relative;
-    left:0px;
-    top:0px;
-}

@@ -117,10 +117,14 @@ function init() {
             //alert('Update JS called!');
             get_field_height = grid.size.y;
             get_field_width = grid.size.x;
+			// not enougth
             if (get_field_height === 1 && get_field_width === 1)
                 return;
             grid_width();
             grid_height();
+			// too large for cookie!
+			if (get_field_height * get_field_width > 8000)
+                return;
             grid_values();
         }
 
@@ -364,15 +368,36 @@ function set_cell_bool (i, j, value){
 function toggle_cell (i, j){
 	cells[i][j] = ! cells[i][j];
 }
-function grid_width (){   document.cookie = "grid_width=" + get_field_width + "; expires = 60000"; }
-function grid_height (){  document.cookie = "grid_height=" + get_field_height + "; expires = 60000"; }
+function grid_width (){   document.cookie = "grid_width=" + get_field_width + "; expires = 6000"; }
+function grid_height (){  document.cookie = "grid_height=" + get_field_height + "; expires = 6000"; }
+
+var grid_values_portion = 3000;
 
 function grid_values(){
-	var values_string = "";
+	//var values_string = "";
+	var values_array = new Array();
+	values_array.push("");
+	var current_count = 0;
+	var current_portion_count = 0;
+	
+	//alert((get_field_width * get_field_height / grid_values_portion));
+	
 	for (var i = 0; i < get_field_width; i++)
-        for (var j = 0; j < get_field_height; j++)
-			values_string += cells[i][j]? 1 : 0;
-    document.cookie = "grid_values=" + values_string + "; expires = 60000";
+        for (var j = 0; j < get_field_height; j++){
+			current_count++;
+			if (current_count === grid_values_portion){
+				current_count = 0;
+				//alert(values_array[current_portion_count]);
+				current_portion_count++;
+				values_array.push("");	// add new string
+				//alert("Count: " + (current_portion_count + 1));
+			}
+			values_array[current_portion_count] += cells[i][j]? '1' : '0';
+		}
+	document.cookie = "grid_portions_count=" + (current_portion_count + 1);
+	for (var i = 0; i <= current_portion_count; i++){
+		document.cookie = "grid_values_" + i + "=" + values_array[i] + "; expires = 6000";
+	}
 }
 
 var draw_style = 'touch';
