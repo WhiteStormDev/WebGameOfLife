@@ -15,4 +15,15 @@
   /* z-index: 1; */
   margin-bottom: 5px;
 }
-
+.tabs .indicator{
+  background-color: #1a237e;
+}
+.tabs .tab a:focus, .tabs .tab a:focus.active{
+  background-color: transparent;
+}
+input[type=submit]{
+  color: white;
+}
+input[type=button]{
+  color: white;
+}

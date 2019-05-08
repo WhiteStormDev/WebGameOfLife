@@ -5710,6 +5710,7 @@ body.keyboard-focused .dropdown-content li:focus {
   font-size: inherit;
   text-transform: inherit;
   background: none;
+  color: white;
 }
 
 .waves-effect img {
